@@ -52,7 +52,7 @@ async function seedStudent() {
 }
 
 async function main() {
-  await mongoose.connect(process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/school_management');
+  await mongoose.connect(process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/test');
   await seedAdmin();
   await seedStudent();
 }

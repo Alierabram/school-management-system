@@ -331,7 +331,7 @@ async function renderCurrentView() {
       page.innerHTML = renderResource(currentView, currentRows);
     }
   } catch (error) {
-    page.innerHTML = `<div class="page-heading"><div><p class="eyebrow">CONNECTION CHECK</p><h1>Could not load records</h1><p>${safe(error.message)}</p></div><button class="btn primary" data-action="retry">Try again</button></div><section class="panel-card"><p class="muted">Check that MongoDB Server is running and that the application is started in your VS Code terminal.</p><p><code>mongodb://127.0.0.1:27017/school_management</code></p></section>`;
+    page.innerHTML = `<div class="page-heading"><div><p class="eyebrow">CONNECTION CHECK</p><h1>Could not load records</h1><p>${safe(error.message)}</p></div><button class="btn primary" data-action="retry">Try again</button></div><section class="panel-card"><p class="muted">Check that MongoDB Server is running and that the application is started in your VS Code terminal.</p><p><code>mongodb://127.0.0.1:27017/test</code></p></section>`;
   }
 }
 function searchRows(query) {

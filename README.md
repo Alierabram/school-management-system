@@ -31,7 +31,7 @@ Edit `.env` before continuing. Set a unique administrator password of at least 1
 
 ```dotenv
 PORT=3000
-MONGODB_URI=mongodb://127.0.0.1:27017/school_management
+MONGODB_URI=mongodb://127.0.0.1:27017/test
 SESSION_SECRET=replace-this-with-a-random-secret-of-at-least-32-characters
 ADMIN_EMAIL=admin@school.local
 ADMIN_PASSWORD=replace-with-your-own-password-12-chars-minimum
@@ -100,7 +100,7 @@ Bulk attendance accepts `{ "classId": "...", "date": "YYYY-MM-DD", "records": [{
 
 ## Notes
 
-- MongoDB creates the database and collections when the application first writes records. The app connects to `mongodb://127.0.0.1:27017/school_management` unless `MONGODB_URI` is changed.
+- MongoDB creates the database and collections when the application first writes records. The app connects to `mongodb://127.0.0.1:27017/test` unless `MONGODB_URI` is changed.
 - Existing fee records created by the earlier single-payment version are migrated to a one-entry payment history on server startup.
 - The displayed grade thresholds are examples; adjust them to the school's official grading policy.
 - This is a university/local learning project, not a production-ready student information system. Before exposing it publicly, configure HTTPS and production secrets, add backups and audit policies, review privacy/legal obligations, and apply production-grade operational monitoring and account controls.

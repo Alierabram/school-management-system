@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 async function connectDatabase() {
   mongoose.set('bufferCommands', false);
-  await mongoose.connect(process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/school_management', {
+  await mongoose.connect(process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/test', {
     serverSelectionTimeoutMS: 10000
   });
   await mongoose.connection.collection('fees').updateMany(
