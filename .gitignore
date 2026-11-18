@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Dependencies
 node_modules/
 npm-debug.log*
@@ -69,3 +70,9 @@ studentenv/
 .kilo/
 uploads/
 *.log
+=======
+node_modules/
+.env
+npm-debug.log*
+.DS_Store
+>>>>>>> origin/main
