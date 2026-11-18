@@ -1,0 +1,31 @@
+const mongoose = require("mongoose");
+const bcrypt = require("bcryptjs");
+
+const userSchema = new mongoose.Schema(
+  {
+    name: { type: String, required: true, trim: true, maxlength: 120 },
+    email: { type: String, required: true, unique: true, lowercase: true, trim: true },
+    password: { type: String, required: true, select: false },
+    role: { type: String, enum: ["Registrar", "Accounts", "HOD"], default: "Registrar" },
+    lastLoginAt: { type: Date }
+  },
+  { timestamps: true }
+);
+
+userSchema.pre("save", async function () {
+  if (!this.isModified("password")) return;
+  this.password = await bcrypt.hash(this.password, 12);
+});
+
+userSchema.methods.comparePassword = function (candidate) {
+  return bcrypt.compare(candidate, this.password);
+};
+
+userSchema.set("toJSON", {
+  transform: function (doc, ret) {
+    delete ret.password;
+    return ret;
+  }
+});
+
+module.exports = mongoose.model("User", userSchema);

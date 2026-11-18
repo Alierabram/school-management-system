@@ -1,0 +1,545 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#102a43">
+  <meta name="robots" content="noindex">
+  <title>Student Management System | Bugema University</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar" aria-label="Main navigation">
+      <a class="brand" href="index.html" aria-label="BugemaDesk home">
+        <img class="brand-logo" src="bugema-university-logo.jpg" alt="Bugema University logo">
+        <span class="brand-word">Bugema<span class="brand-light">Desk</span></span>
+      </a>
+
+      <p class="nav-label">WORKSPACE</p>
+      <nav class="nav-list" aria-label="Primary">
+        <a class="nav-link active" href="#overview" aria-current="page"><span aria-hidden="true">▦</span> Overview</a>
+        <a class="nav-link" href="#students" aria-current="page"><span aria-hidden="true">♙</span> Students</a>
+        <a class="nav-link" href="#reports" aria-current="page"><span aria-hidden="true">⎙</span> Reports</a>
+        <a class="nav-link" href="#audit" id="auditNavLink" aria-current="page" hidden><span aria-hidden="true">🛡</span> Audit Logs</a>
+      </nav>
+
+      <div class="sidebar-user">
+        <div class="user-avatar" id="userAvatar" aria-hidden="true">BU</div>
+        <div class="user-meta">
+          <strong id="userName">Loading…</strong>
+          <small id="userRole">Registrar</small>
+        </div>
+      </div>
+
+      <button class="logout-btn" id="logoutBtn" type="button">
+        <span aria-hidden="true">⏻</span> Logout
+      </button>
+
+      <div class="sidebar-bottom">
+        <span class="status-dot" id="sidebarStatus"></span>
+        <span>MongoDB connection</span>
+        <span class="live" id="sidebarConnection">CHECKING</span>
+      </div>
+    </aside>
+
+    <main class="main" id="overview">
+      <header class="topbar">
+        <button class="menu-btn" id="menuBtn" type="button" aria-label="Toggle navigation" aria-expanded="false">☰</button>
+        <div class="title-block">
+          <div class="eyebrow">BUGEMA UNIVERSITY · CAMPUS ADMINISTRATION</div>
+          <h1>Student Management</h1>
+          <p class="subheading">Admission, academic, tuition and guardian records for Bugema University.</p>
+        </div>
+        <div class="top-actions">
+          <button class="secondary-btn icon-btn" id="themeToggleBtn" type="button" aria-label="Toggle dark theme" title="Toggle theme">☾</button>
+          <span class="db-pill" id="connectionPill"><span class="status-dot"></span><span id="connectionText">Checking database</span></span>
+          <button class="primary-btn" id="addStudentBtn" type="button"><span aria-hidden="true">＋</span> Register student</button>
+        </div>
+      </header>
+
+      <section class="hero-card" aria-label="Quick overview">
+        <div class="hero-greeting">
+          <div class="eyebrow">WELCOME BACK</div>
+          <h2><span id="heroName">Registrar</span>, here's the campus picture.</h2>
+          <p class="hero-sub">Search, register and manage Bugema University student records in one place.</p>
+          <div class="hero-actions">
+            <button class="primary-btn" id="heroAddBtn" type="button"><span aria-hidden="true">＋</span> Register student</button>
+            <button class="secondary-btn" id="heroSearchBtn" type="button">⌕ <span>Search records</span></button>
+            <button class="secondary-btn" id="heroPrintBtn" type="button">⎙ <span>Print directory</span></button>
+          </div>
+        </div>
+        <div class="hero-badge" id="heroBadge">
+          <div class="hero-badge-num" id="heroTotal">—</div>
+          <div class="hero-badge-label">registered students</div>
+          <div class="hero-badge-foot"><span class="status-dot"></span><span id="heroConnection">Connecting…</span></div>
+        </div>
+      </section>
+
+      <section class="stats" aria-label="Student analytics">
+        <article class="stat-card">
+          <div class="stat-top"><span>Total students</span><span class="stat-icon blue" aria-hidden="true">♙</span></div>
+          <div class="stat-value" id="totalCount" aria-live="polite">—</div>
+          <div class="stat-foot">All stored MongoDB records</div>
+        </article>
+        <article class="stat-card">
+          <div class="stat-top"><span>Active students</span><span class="stat-icon green" aria-hidden="true">✓</span></div>
+          <div class="stat-value" id="activeCount" aria-live="polite">—</div>
+          <div class="stat-foot">Currently active enrolments</div>
+        </article>
+        <article class="stat-card">
+          <div class="stat-top"><span>Tuition cleared</span><span class="stat-icon teal" aria-hidden="true">$</span></div>
+          <div class="stat-value" id="tuitionClearedCount" aria-live="polite">—</div>
+          <div class="stat-foot">Cleared for graduation paperwork</div>
+        </article>
+        <article class="stat-card">
+          <div class="stat-top"><span>Programmes</span><span class="stat-icon amber" aria-hidden="true">◇</span></div>
+          <div class="stat-value" id="programmeCount" aria-live="polite">—</div>
+          <div class="stat-foot">Distinct study programmes</div>
+        </article>
+        <article class="stat-card">
+          <div class="stat-top"><span>Departments</span><span class="stat-icon violet" aria-hidden="true">▤</span></div>
+          <div class="stat-value" id="departmentCount" aria-live="polite">—</div>
+          <div class="stat-foot">Departments represented</div>
+        </article>
+      </section>
+
+      <section class="overview-grid" aria-label="Recent records and programme distribution">
+        <article class="panel insight-card" id="recentPanel">
+          <div class="insight-heading">
+            <div>
+              <div class="eyebrow">RECENT REGISTRATIONS</div>
+              <h2>Latest student records</h2>
+            </div>
+            <button class="text-btn" id="recentViewAllBtn" type="button">View all →</button>
+          </div>
+          <div class="recent-list" id="recentList">
+            <div class="recent-loading">Loading recent registrations…</div>
+          </div>
+        </article>
+
+        <article class="panel insight-card" id="programmePanel">
+          <div class="insight-heading">
+            <div>
+              <div class="eyebrow">PROGRAMME MIX</div>
+              <h2>Students per programme</h2>
+            </div>
+          </div>
+          <div class="chart" id="programmeChart">
+            <div class="chart-empty">Loading chart…</div>
+          </div>
+        </article>
+      </section>
+
+      <section class="panel" id="students" aria-labelledby="recordsHeading">
+        <div class="panel-head">
+          <div>
+            <div class="eyebrow">DIRECTORY</div>
+            <h2 id="recordsHeading">Student records</h2>
+            <p>Search, filter and manage the registered Bugema University student directory.</p>
+          </div>
+          <span class="record-count" id="recordCount" aria-live="polite">0 records</span>
+        </div>
+
+        <div class="toolbar" id="toolbar">
+          <label class="searchbox">
+            <span aria-hidden="true">⌕</span>
+            <span class="visually-hidden">Search name, registration number or email</span>
+            <input id="searchInput" type="search" maxlength="100" placeholder="Search name, registration no. or email">
+          </label>
+          <label class="filter-control">
+            <span class="visually-hidden">Filter by programme</span>
+            <select id="programmeFilter"><option value="">All programmes</option></select>
+          </label>
+          <label class="filter-control">
+            <span class="visually-hidden">Filter by department</span>
+            <select id="departmentFilter"><option value="">All departments</option></select>
+          </label>
+          <label class="filter-control">
+            <span class="visually-hidden">Filter by year of study</span>
+            <select id="yearFilter"><option value="">All years</option><option value="1">Year 1</option><option value="2">Year 2</option><option value="3">Year 3</option><option value="4">Year 4</option></select>
+          </label>
+          <label class="filter-control">
+            <span class="visually-hidden">Filter by academic status</span>
+            <select id="academicStatusFilter">
+              <option value="">All statuses</option>
+              <option value="Active">Active</option>
+              <option value="On Probation">On Probation</option>
+              <option value="Suspended">Suspended</option>
+              <option value="Graduated">Graduated</option>
+              <option value="Deferred">Deferred</option>
+            </select>
+          </label>
+          <label class="filter-control">
+            <span class="visually-hidden">Filter by tuition status</span>
+            <select id="tuitionStatusFilter">
+              <option value="">All tuition statuses</option>
+              <option value="Cleared">Cleared</option>
+              <option value="Partial">Partial</option>
+              <option value="Pending">Pending</option>
+            </select>
+          </label>
+          <label class="filter-control">
+            <span class="visually-hidden">Sort student records</span>
+            <select id="sortFilter">
+              <option value="createdAt:desc">Newest first</option>
+              <option value="fullName:asc">Name A–Z</option>
+              <option value="fullName:desc">Name Z–A</option>
+              <option value="regNo:asc">Registration no.</option>
+              <option value="yearOfStudy:asc">Study year</option>
+            </select>
+          </label>
+          <button class="secondary-btn" id="clearFiltersBtn" type="button">Clear</button>
+          <button class="secondary-btn" id="refreshBtn" type="button" aria-label="Refresh student records">↻ <span>Refresh</span></button>
+          <button class="secondary-btn" id="exportCsvBtn" type="button" aria-label="Export current student records as CSV">⇩ <span>CSV</span></button>
+          <button class="secondary-btn" id="importCsvBtn" type="button" aria-label="Import student records from CSV">⇧ <span>Import CSV</span></button>
+          <button class="secondary-btn" id="exportJsonBtn" type="button" aria-label="Export current student records as JSON">JSON</button>
+          <button class="secondary-btn" id="printDirectoryBtn" type="button" aria-label="Print current filtered student directory">⎙ <span>Print Directory</span></button>
+        </div>
+
+        <div class="loading-bar" id="loadingBar" hidden><span></span></div>
+
+        <div class="table-wrap" tabindex="0" aria-label="Scrollable student records table">
+          <table class="student-table">
+            <thead>
+              <tr>
+                <th scope="col">Student</th>
+                <th scope="col">Reg. No.</th>
+                <th scope="col">Programme / Department</th>
+                <th scope="col">Year / Semester</th>
+                <th scope="col">Academic Status</th>
+                <th scope="col">Tuition Status</th>
+                <th scope="col" class="action-heading">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="studentRows"><tr><td colspan="7" class="empty">Loading student records…</td></tr></tbody>
+          </table>
+        </div>
+
+        <div class="pagination">
+          <span id="pageSummary" aria-live="polite">Page 1 of 1</span>
+          <div class="page-actions">
+            <button class="page-btn" id="previousPage" type="button" aria-label="Previous page">←</button>
+            <div class="page-numbers" id="pageNumbers"></div>
+            <button class="page-btn" id="nextPage" type="button" aria-label="Next page">→</button>
+          </div>
+        </div>
+
+        <div class="panel-foot">
+          <span>Records are stored and queried from MongoDB</span>
+          <span class="powered">MongoDB · Express · Node.js · JWT</span>
+        </div>
+      </section>
+
+      <section class="about-section" id="reports" aria-labelledby="reportsHeading">
+        <div>
+          <div class="eyebrow">REPORTING SUITE</div>
+          <h2 id="reportsHeading">Official reports and exports</h2>
+          <p>Print the current filtered directory, print an individual student registration slip, or export the filtered records to CSV or JSON for administration workflows.</p>
+        </div>
+        <div class="architecture-strip">
+          <span>Browser</span><b aria-hidden="true">→</b><span>Express API</span><b aria-hidden="true">→</b><span>MongoDB</span>
+        </div>
+      </section>
+    </main>
+
+    <section class="panel" id="audit" aria-labelledby="auditHeading" hidden>
+      <div class="panel-head">
+        <div>
+          <div class="eyebrow">AUDIT TRAIL</div>
+          <h2 id="auditHeading">System audit logs</h2>
+          <p>Immutable record of administrative actions performed against the student directory.</p>
+        </div>
+        <span class="record-count" id="auditCount" aria-live="polite">0 events</span>
+      </div>
+      <div class="table-wrap" tabindex="0" aria-label="Audit logs table">
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">Timestamp</th>
+              <th scope="col">Actor</th>
+              <th scope="col">Action</th>
+              <th scope="col">Target</th>
+              <th scope="col">Details</th>
+            </tr>
+          </thead>
+          <tbody id="auditRows"><tr><td colspan="5" class="empty">Loading audit logs…</td></tr></tbody>
+        </table>
+      </div>
+      <div class="pagination">
+        <span id="auditPageSummary" aria-live="polite">Page 1 of 1</span>
+        <div class="page-actions">
+          <button class="page-btn" id="auditPreviousPage" type="button" aria-label="Previous audit page">←</button>
+          <div class="page-numbers" id="auditPageNumbers"></div>
+          <button class="page-btn" id="auditNextPage" type="button" aria-label="Next audit page">→</button>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div class="modal-backdrop" id="formBackdrop" hidden>
+    <section class="modal" role="dialog" aria-modal="true" aria-labelledby="formTitle" aria-describedby="formDescription">
+      <div class="modal-head">
+        <div>
+          <div class="eyebrow">STUDENT DIRECTORY</div>
+          <h2 id="formTitle">Register student</h2>
+          <p id="formDescription">Enter the student's academic details.</p>
+        </div>
+        <button class="close-btn" id="closeFormBtn" type="button" aria-label="Close form">×</button>
+      </div>
+      <form id="studentForm" novalidate>
+        <div class="form-grid">
+          <label>Full name<input name="fullName" required maxlength="120" autocomplete="name" placeholder="e.g. Amina Deng"></label>
+          <label>Registration number<input name="regNo" required maxlength="40" autocomplete="off" placeholder="e.g. 24/BSE/BU/R/0016"></label>
+          <label>Gender<select name="gender" required><option value="Male">Male</option><option value="Female">Female</option></select></label>
+          <label>Date of birth<input name="dateOfBirth" type="date"></label>
+          <label>Email address<input name="email" type="email" required maxlength="150" autocomplete="email" placeholder="student@bugemauniv.ac.ug"></label>
+          <label>Phone number <span class="optional">optional</span><input name="phone" type="tel" maxlength="30" autocomplete="tel" placeholder="e.g. +256 700 000 000"></label>
+          <label>Nationality<span class="optional">optional</span><input name="nationality" maxlength="60" value="Ugandan" autocomplete="off"></label>
+          <label>Programme<input name="programme" required maxlength="120" list="programmeOptions" autocomplete="off" placeholder="Choose or type a programme"></label>
+          <label>Department<input name="department" required maxlength="120" list="departmentOptions" autocomplete="off" placeholder="Choose or type a department"></label>
+          <label>Year of study<select name="yearOfStudy" required><option value="">Choose year</option><option value="1">Year 1</option><option value="2">Year 2</option><option value="3">Year 3</option><option value="4">Year 4</option></select></label>
+          <label>Semester<select name="semester"><option>Semester I</option><option>Semester II</option></select></label>
+          <label>Academic status<select name="academicStatus"><option>Active</option><option>On Probation</option><option>Suspended</option><option>Graduated</option><option>Deferred</option></select></label>
+          <label>Tuition status<select name="tuitionStatus"><option>Pending</option><option>Partial</option><option value="Cleared">Cleared</option></select></label>
+          <label>Enrolled date<input name="enrolledDate" type="date"></label>
+          <label>Guardian name<span class="optional">optional</span><input name="guardianName" maxlength="120" autocomplete="off"></label>
+          <label>Guardian phone<span class="optional">optional</span><input name="guardianPhone" type="tel" maxlength="30" autocomplete="tel"></label>
+        </div>
+
+        <datalist id="programmeOptions"></datalist>
+        <datalist id="departmentOptions"></datalist>
+
+        <p class="field-hint">Programme accepts typed values via the suggested list. Registration numbers follow the Bugema format, for example 24/BSE/BU/R/0016.</p>
+
+        <div class="form-error" id="formError" role="alert" aria-live="assertive" hidden></div>
+
+        <div class="modal-actions">
+          <button type="button" class="secondary-btn" id="cancelBtn">Cancel</button>
+          <button type="submit" class="primary-btn" id="saveStudentBtn"><span id="saveStudentLabel">Save student</span></button>
+        </div>
+      </form>
+    </section>
+  </div>
+
+  <div class="modal-backdrop" id="profileBackdrop" hidden>
+    <section class="modal profile-modal" role="dialog" aria-modal="true" aria-labelledby="profileTitle">
+      <div class="modal-head">
+        <div class="profile-heading">
+          <div class="avatar avatar-lg" id="profileAvatar" aria-hidden="true">BU</div>
+          <div>
+            <div class="eyebrow">STUDENT PROFILE</div>
+            <h2 id="profileTitle">Student details</h2>
+            <p id="profileRegNo" class="profile-reg">Reg. No. not loaded</p>
+          </div>
+        </div>
+        <button class="close-btn" id="closeProfileBtn" type="button" aria-label="Close student details">×</button>
+      </div>
+
+      <div class="profile-badges">
+        <span class="badge" id="profileAcademicBadge">Academic Status</span>
+        <span class="badge" id="profileTuitionBadge">Tuition Status</span>
+      </div>
+
+      <dl class="details-grid" id="profileGrid"></dl>
+
+      <div class="modal-actions">
+        <button type="button" class="secondary-btn" id="printSlipBtn">⎙ Print Registration Slip</button>
+        <button type="button" class="secondary-btn" id="editProfileBtn">Edit student</button>
+        <button type="button" class="primary-btn" id="profileDoneBtn">Close</button>
+      </div>
+    </section>
+  </div>
+
+  <div class="modal-backdrop" id="confirmBackdrop" hidden>
+    <section class="modal confirm-modal" role="alertdialog" aria-modal="true" aria-labelledby="confirmTitle">
+      <div class="modal-head">
+        <div>
+          <div class="eyebrow">CONFIRM DELETION</div>
+          <h2 id="confirmTitle">Delete student record</h2>
+          <p id="confirmMessage">This action cannot be undone.</p>
+        </div>
+        <button class="close-btn" id="closeConfirmBtn" type="button" aria-label="Close confirmation">×</button>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="secondary-btn" id="cancelDeleteBtn">Cancel</button>
+        <button type="button" class="primary-btn danger" id="confirmDeleteBtn">Delete record</button>
+      </div>
+    </section>
+  </div>
+
+  <div class="modal-backdrop" id="digitalIdBackdrop" hidden>
+    <section class="modal digital-id-modal" role="dialog" aria-modal="true" aria-labelledby="digitalIdTitle">
+      <div class="modal-head">
+        <div>
+          <div class="eyebrow">DIGITAL STUDENT ID</div>
+          <h2 id="digitalIdTitle">Digital ID Card</h2>
+          <p>Scan the QR code to verify this student's record publicly.</p>
+        </div>
+        <button class="close-btn" id="closeDigitalIdBtn" type="button" aria-label="Close digital ID">×</button>
+      </div>
+      <div class="digital-id-body">
+        <div class="digital-id-card">
+          <div class="digital-id-header">
+            <img src="bugema-university-logo.jpg" alt="Bugema University logo" class="digital-id-logo">
+            <div>
+              <strong>BUGEMA UNIVERSITY</strong>
+              <small>Official Student Identification</small>
+            </div>
+          </div>
+          <div class="digital-id-main">
+            <div class="avatar avatar-xl" id="digitalIdAvatar" aria-hidden="true">BU</div>
+            <div class="digital-id-info">
+              <h3 id="digitalIdName">—</h3>
+              <p id="digitalIdProgramme">—</p>
+              <dl class="digital-id-meta">
+                <div><dt>Reg. No.</dt><dd id="digitalIdRegNo">—</dd></div>
+                <div><dt>Year</dt><dd id="digitalIdYear">—</dd></div>
+                <div><dt>Department</dt><dd id="digitalIdDept">—</dd></div>
+                <div><dt>Status</dt><dd id="digitalIdStatus">—</dd></div>
+              </dl>
+            </div>
+          </div>
+          <div class="digital-id-qr">
+            <canvas id="digitalIdQr" aria-label="QR code linking to public verification page"></canvas>
+            <small>Scan to verify at <span id="digitalIdUrl">/verify.html</span></small>
+          </div>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="secondary-btn" id="printDigitalIdBtn">⎙ Print ID Card</button>
+        <button type="button" class="primary-btn" id="digitalIdDoneBtn">Close</button>
+      </div>
+    </section>
+  </div>
+
+  <div class="modal-backdrop" id="academicsBackdrop" hidden>
+    <section class="modal academics-modal" role="dialog" aria-modal="true" aria-labelledby="academicsTitle">
+      <div class="modal-head">
+        <div>
+          <div class="eyebrow">ACADEMICS & MARKS</div>
+          <h2 id="academicsTitle">Course units & marks</h2>
+          <p id="academicsSub">Assign course units and enter marks for this student.</p>
+        </div>
+        <button class="close-btn" id="closeAcademicsBtn" type="button" aria-label="Close academics">×</button>
+      </div>
+      <form id="academicsForm" novalidate>
+        <div class="academics-grid">
+          <label>Course code<input name="courseCode" required maxlength="20" placeholder="e.g. BSE-201"></label>
+          <label>Course title<input name="courseTitle" required maxlength="120" placeholder="e.g. Software Engineering"></label>
+          <label>Credit hours<input name="creditHours" type="number" min="1" max="12" value="3"></label>
+          <label>Semester<select name="semester"><option>Semester I</option><option>Semester II</option></select></label>
+          <label>Coursework marks<input name="courseworkMarks" type="number" min="0" max="100" placeholder="0-100"></label>
+          <label>Exam marks<input name="examMarks" type="number" min="0" max="100" placeholder="0-100"></label>
+        </div>
+        <div class="form-error" id="academicsError" role="alert" aria-live="assertive" hidden></div>
+        <div class="modal-actions">
+          <button type="button" class="secondary-btn" id="cancelAcademicsBtn">Cancel</button>
+          <button type="submit" class="primary-btn" id="saveCourseBtn">Add course</button>
+        </div>
+      </form>
+      <div class="courses-table-wrap">
+        <table class="courses-table">
+          <thead>
+            <tr><th>Code</th><th>Title</th><th>Credits</th><th>Coursework</th><th>Exam</th><th>Total</th><th>Grade</th><th></th></tr>
+          </thead>
+          <tbody id="coursesRows"><tr><td colspan="8" class="empty">No courses assigned yet.</td></tr></tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <div class="modal-backdrop" id="tuitionBackdrop" hidden>
+    <section class="modal tuition-modal" role="dialog" aria-modal="true" aria-labelledby="tuitionTitle">
+      <div class="modal-head">
+        <div>
+          <div class="eyebrow">TUITION LEDGER</div>
+          <h2 id="tuitionTitle">Record tuition payment</h2>
+          <p id="tuitionSub">Log a payment against this student's tuition balance.</p>
+        </div>
+        <button class="close-btn" id="closeTuitionBtn" type="button" aria-label="Close tuition ledger">×</button>
+      </div>
+      <form id="tuitionForm" novalidate>
+        <div class="tuition-summary" id="tuitionSummary"></div>
+        <div class="form-grid">
+          <label>Amount paid (UGX)<input name="amount" type="number" min="0" step="100" required placeholder="e.g. 500000"></label>
+          <label>Payment method<select name="method"><option>Bank Transfer</option><option>Mobile Money</option><option>Cash</option><option>Cheque</option></select></label>
+          <label>Payment reference<input name="reference" maxlength="60" placeholder="e.g. MTN-2026-001"></label>
+          <label>Academic year<select name="academicYear"><option>2025/2026</option><option>2024/2025</option><option>2023/2024</option></select></label>
+        </div>
+        <div class="form-error" id="tuitionError" role="alert" aria-live="assertive" hidden></div>
+        <div class="modal-actions">
+          <button type="button" class="secondary-btn" id="cancelTuitionBtn">Cancel</button>
+          <button type="submit" class="primary-btn" id="saveTuitionBtn">Record payment</button>
+        </div>
+      </form>
+      <div class="ledger-table-wrap">
+        <table class="ledger-table">
+          <thead>
+            <tr><th>Date</th><th>Amount</th><th>Method</th><th>Reference</th><th>Balance</th></tr>
+          </thead>
+          <tbody id="ledgerRows"><tr><td colspan="5" class="empty">No payments recorded yet.</td></tr></tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <div class="modal-backdrop" id="importBackdrop" hidden>
+    <section class="modal import-modal" role="dialog" aria-modal="true" aria-labelledby="importTitle">
+      <div class="modal-head">
+        <div>
+          <div class="eyebrow">BULK IMPORT</div>
+          <h2 id="importTitle">Import students from CSV</h2>
+          <p>Upload a CSV file with student records. Required columns: fullName, regNo, gender, email, programme, department, yearOfStudy.</p>
+        </div>
+        <button class="close-btn" id="closeImportBtn" type="button" aria-label="Close import">×</button>
+      </div>
+      <form id="importForm" novalidate>
+        <div class="import-dropzone" id="importDropzone">
+          <span aria-hidden="true">📄</span>
+          <p>Drag & drop a CSV file here, or click to browse</p>
+          <input type="file" id="importFile" accept=".csv,text/csv" hidden>
+        </div>
+        <div class="import-actions">
+          <button type="button" class="secondary-btn" id="downloadTemplateBtn">Download CSV template</button>
+        </div>
+        <div class="form-error" id="importError" role="alert" aria-live="assertive" hidden></div>
+        <div class="import-summary" id="importSummary" hidden></div>
+        <div class="modal-actions">
+          <button type="button" class="secondary-btn" id="cancelImportBtn">Cancel</button>
+          <button type="submit" class="primary-btn" id="importSubmitBtn" disabled>Import records</button>
+        </div>
+      </form>
+    </section>
+  </div>
+
+  <div class="modal-backdrop" id="commandBackdrop" hidden>
+    <section class="modal command-modal" role="dialog" aria-modal="true" aria-labelledby="commandTitle">
+      <div class="command-head">
+        <span aria-hidden="true" class="command-icon">⌕</span>
+        <input id="commandInput" type="text" maxlength="100" placeholder="Search students, jump to pages, or run actions…" autocomplete="off" aria-label="Command palette search">
+        <kbd class="command-hint" id="commandHint">ESC</kbd>
+      </div>
+      <div class="command-results" id="commandResults"></div>
+      <div class="command-foot">
+        <span><kbd>↑</kbd><kbd>↓</kbd> to navigate</span>
+        <span><kbd>↵</kbd> to select</span>
+        <span class="command-brand">BugemaDesk</span>
+      </div>
+    </section>
+  </div>
+
+  <section id="printDirectory" class="print-only" aria-hidden="false"></section>
+  <section id="printSlip" class="print-only" aria-hidden="false"></section>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="js/app.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode/1.5.0/qrcode.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js" defer></script>
+</body>
+</html>

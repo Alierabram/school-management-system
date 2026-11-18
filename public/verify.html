@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#102a43">
+  <meta name="robots" content="noindex">
+  <title>Bugema University Verification | Student ID Scanner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .verify-shell {
+      min-height: 100vh;
+      background: linear-gradient(135deg, var(--navy) 0%, var(--navy-raised) 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .verify-card {
+      width: 100%;
+      max-width: 520px;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 20px 60px rgba(16, 42, 67, .15);
+      overflow: hidden;
+    }
+    .verify-header {
+      text-align: center;
+      padding: 40px 32px 24px;
+      background: var(--blue-pale);
+    }
+    .verify-logo {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      margin: 0 auto 16px;
+      background: white;
+      object-fit: contain;
+    }
+    .verify-title {
+      font: 800 28px/1.2 Manrope, sans-serif;
+      color: var(--navy);
+      margin: 0 0 8px;
+    }
+    .verify-subtitle {
+      color: var(--muted);
+      font-size: 15px;
+      margin: 0;
+    }
+    .verify-body {
+      padding: 32px;
+    }
+    .scan-section {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .scan-input-group {
+      position: relative;
+    }
+    .scan-icon {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 20px;
+      color: #99a4b1;
+    }
+    .scan-input {
+      width: 100%;
+      height: 48px;
+      padding: 0 12px 0 44px;
+      border: 2px solid var(--line);
+      border-radius: 6px;
+      font-size: 15px;
+      transition: border-color .16s ease;
+    }
+    .scan-input:focus {
+      border-color: var(--blue);
+      outline: none;
+    }
+    .scan-btn {
+      width: 100%;
+      height: 48px;
+      background: var(--blue);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background .16s ease;
+    }
+    .scan-btn:hover { background: var(--blue-dark); }
+    .scan-btn:disabled {
+      background: #e5ebf1;
+      color: #a3b0c7;
+      cursor: not-allowed;
+    }
+    .loading-spinner {
+      display: none;
+      width: 24px;
+      height: 24px;
+      margin: 0 auto;
+      border: 3px solid rgba(255,255,255,.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .result-section {
+      margin-top: 20px;
+      display: none;
+    }
+    .result-section.active { display: block; }
+    .verification-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 15px;
+      margin-bottom: 20px;
+    }
+    .verification-badge.verified {
+      background: #e6f5ee;
+      color: #287354;
+      border: 1px solid #e5f4ee;
+    }
+    .verification-badge.unverified {
+      background: #fff3f3;
+      color: #a14843;
+      border: 1px solid #faeeec;
+    }
+    .student-details {
+      display: grid;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .detail-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid #f0f3f6;
+    }
+    .detail-label { color: #8290a0; font-size: 12px; }
+    .detail-value { color: #2e4258; font-size: 12px; font-weight: 600; }
+    .detail-full { grid-column: 1 / -1; margin-bottom: 8px; }
+    .detail-full .detail-label { margin-bottom: 4px; }
+    .detail-full .detail-value {
+      padding: 10px 12px;
+      background: #f8fafc;
+      border-radius: 5px;
+      font-size: 13px;
+    }
+    .error-message {
+      background: #fff3f3;
+      color: #a14843;
+      padding: 12px 16px;
+      border-radius: 6px;
+      margin-top: 16px;
+      display: none;
+    }
+    .error-message.active { display: block; }
+    .verified-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .verified-icon {
+      width: 48px;
+      height: 48px;
+      background: #e6f5ee;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      color: #287354;
+      font-size: 24px;
+    }
+    .verified-text h3 { margin: 0 0 4px; color: #287354; font-size: 18px; }
+    .verified-text p { margin: 0; color: #5b6e82; font-size: 13px; }
+    .back-link {
+      display: inline-block;
+      margin-top: 24px;
+      color: var(--blue);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 14px;
+    }
+    .back-link:hover { text-decoration: underline; }
+    @media (max-width: 640px) {
+      .verify-card { border-radius: 10px 10px 0 0; }
+    }
+  </style>
+</head>
+<body class="login-body">
+  <div class="verify-shell">
+    <main class="verify-card">
+      <header class="verify-header">
+        <img class="verify-logo" src="bugema-university-logo.jpg" alt="Bugema University">
+        <h1 class="verify-title">Student Verification</h1>
+        <p class="verify-subtitle">Scan or enter registration number to verify Bugema University student status</p>
+      </header>
+
+      <div class="verify-body">
+        <div class="scan-section">
+          <div class="scan-input-group">
+            <span class="scan-icon" aria-hidden="true">🔍</span>
+            <input id="regNoInput" class="scan-input" type="text" maxlength="20" placeholder="e.g., 24/BSE/BU/R/0016" aria-label="Registration number">
+          </div>
+          <button id="verifyBtn" class="scan-btn" type="button">
+            <span class="loading-spinner" id="loadingSpinner"></span>
+            <span id="btnText">Verify Student</span>
+          </button>
+          <div class="error-message" id="errorMessage" role="alert"></div>
+        </div>
+
+        <div class="result-section" id="resultSection">
+          <div class="verified-info">
+            <div class="verified-icon" aria-hidden="true">✓</div>
+            <div class="verified-text">
+              <h3>VERIFIED ACTIVE STUDENT</h3>
+              <p>This person is currently registered and active at Bugema University.</p>
+            </div>
+          </div>
+
+          <div class="student-details">
+            <div class="detail-row detail-full">
+              <span class="detail-label">Full Name</span>
+              <span class="detail-value" id="resultFullName">—</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Registration No.</span>
+              <span class="detail-value" id="resultRegNo">—</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Programme</span>
+              <span class="detail-value" id="resultProgramme">—</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Department</span>
+              <span class="detail-value" id="resultDepartment">—</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Year / Semester</span>
+              <span class="detail-value" id="resultYearSemester">—</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Academic Status</span>
+              <span class="detail-value" id="resultAcademicStatus">—</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Tuition Status</span>
+              <span class="detail-value" id="resultTuitionStatus">—</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Email</span>
+              <span class="detail-value" id="resultEmail">—</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Verified At</span>
+              <span class="detail-value" id="resultVerifiedAt">—</span>
+            </div>
+          </div>
+
+          <a href="index.html" class="back-link">← Back to Dashboard</a>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    (function() {
+      const TOKEN_KEY = "bugemadesk_token";
+      const API_BASE = "/api";
+      const $ = (id) => document.getElementById(id);
+      const regNoInput = $("regNoInput");
+      const verifyBtn = $("verifyBtn");
+      const loadingSpinner = $("loadingSpinner");
+      const btnText = $("btnText");
+      const errorMessage = $("errorMessage");
+      const resultSection = $("resultSection");
+
+      let verifyTimeout;
+
+      function clearResult() {
+        resultSection.classList.remove("active");
+        errorMessage.classList.remove("active");
+        errorMessage.textContent = "";
+        ["FullName", "RegNo", "Programme", "Department", "YearSemester", "AcademicStatus", "TuitionStatus", "Email", "VerifiedAt"].forEach(id => {
+          const el = $(id);
+          if (el) el.textContent = "—";
+        });
+      }
+
+      function showLoading(show) {
+        loadingSpinner.style.display = show ? "inline-block" : "none";
+        btnText.textContent = show ? "Verifying..." : "Verify Student";
+        verifyBtn.disabled = show;
+      }
+
+      function showError(message) {
+        clearResult();
+        errorMessage.textContent = message;
+        errorMessage.classList.add("active");
+      }
+
+      async function verifyStudent(regNo) {
+        showLoading(true);
+        clearResult();
+
+        try {
+          const response = await fetch(`${API_BASE}/students/public/verify/${encodeURIComponent(regNo)}`);
+          if (!response.ok) {
+            const error = await response.json();
+            showError(error.error || "Verification failed.");
+            return;
+          }
+          const data = await response.json();
+          if (!data.verified) {
+            showError("Student not found or inactive.");
+            return;
+          }
+
+          resultSection.classList.add("active");
+          $("resultFullName").textContent = data.data.fullName || "—";
+          $("resultRegNo").textContent = data.data.regNo || "—";
+          $("resultProgramme").textContent = data.data.programme || "—";
+          $("resultDepartment").textContent = data.data.department || "—";
+          $("resultYearSemester").textContent = `${data.data.yearOfStudy || "—"} ${data.data.semester || "—"}`;
+          $("resultAcademicStatus").textContent = data.data.academicStatus || "—";
+          $("resultTuitionStatus").textContent = data.data.tuitionStatus || "—";
+          $("resultEmail").textContent = data.data.email || "—";
+          $("resultVerifiedAt").textContent = data.data.verifiedAt ? new Date(data.data.verifiedAt).toLocaleString() : "—";
+        } catch (error) {
+          showError("Network error. Please try again.");
+        } finally {
+          showLoading(false);
+        }
+      }
+
+      function handleInputChange() {
+        clearResult();
+        errorMessage.classList.remove("active");
+        if (verifyTimeout) clearTimeout(verifyTimeout);
+        const value = regNoInput.value.trim().toUpperCase();
+        if (!value) return;
+        verifyTimeout = setTimeout(() => verifyStudent(value), 500);
+      }
+
+      regNoInput.addEventListener("input", handleInputChange);
+
+      verifyBtn.addEventListener("click", () => {
+        const value = regNoInput.value.trim().toUpperCase();
+        if (!value) {
+          showError("Please enter a registration number.");
+          return;
+        }
+        verifyStudent(value);
+      });
+
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          const value = regNoInput.value.trim().toUpperCase();
+          if (value) verifyStudent(value);
+        }
+      });
+    })();
+  </script>
+</body>
+</html>
